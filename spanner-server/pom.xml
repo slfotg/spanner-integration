@@ -14,7 +14,23 @@
         <dependency>
             <groupId>io.github.slfotg.spanner</groupId>
             <artifactId>spanner-proto</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.slfotg.spanner</groupId>
+            <artifactId>spanner-domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.slfotg.spanner</groupId>
+            <artifactId>spanner-domain-mapper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.slfotg.spanner</groupId>
+            <artifactId>spanner-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.slfotg.spanner</groupId>
+            <artifactId>spanner-client</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

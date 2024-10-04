@@ -14,19 +14,22 @@
         <module>spanner-proto</module>
         <module>spanner-server</module>
         <module>spanner-client</module>
+        <module>spanner-api</module>
+        <module>spanner-domain</module>
+        <module>spanner-domain-mapper</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <checkstyle-maven-plugin.version>3.5.0</checkstyle-maven-plugin.version>
 
         <grpc.version>1.65.1</grpc.version>
         <protobuf.version>3.25.3</protobuf.version>
         <protoc.version>3.25.3</protoc.version>
         <dagger.version>2.52</dagger.version>
         <org.mapstruct.version>1.6.0</org.mapstruct.version>
+        <annotations-api.version>6.0.53</annotations-api.version>
     </properties>
 
     <dependencyManagement>
@@ -34,6 +37,26 @@
             <dependency>
                 <groupId>io.github.slfotg.spanner</groupId>
                 <artifactId>spanner-proto</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.slfotg.spanner</groupId>
+                <artifactId>spanner-domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.slfotg.spanner</groupId>
+                <artifactId>spanner-domain-mapper</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.slfotg.spanner</groupId>
+                <artifactId>spanner-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.slfotg.spanner</groupId>
+                <artifactId>spanner-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -67,6 +90,22 @@
                 <groupId>com.google.dagger</groupId>
                 <artifactId>dagger-grpc-server-processor</artifactId>
                 <version>${dagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>annotations-api</artifactId>
+                <version>${annotations-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

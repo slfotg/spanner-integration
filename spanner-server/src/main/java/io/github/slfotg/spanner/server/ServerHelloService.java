@@ -5,25 +5,24 @@ import java.util.UUID;
 import com.google.cloud.spanner.DatabaseClient;
 import com.google.cloud.spanner.Statement;
 
-import io.github.slfotg.spanner.grpc.HelloReply;
-import io.github.slfotg.spanner.grpc.HelloRequest;
-import io.github.slfotg.spanner.grpc.HelloServiceGrpc.HelloServiceImplBase;
-import io.grpc.stub.StreamObserver;
+import io.github.slfotg.spanner.api.HelloService;
+import io.github.slfotg.spanner.domain.HelloReply;
+import io.github.slfotg.spanner.domain.HelloRequest;
 
-public class HelloService extends HelloServiceImplBase {
+public class ServerHelloService implements HelloService {
 
     private final DatabaseClient client;
 
-    public HelloService(DatabaseClient client) {
+    public ServerHelloService(DatabaseClient client) {
         this.client = client;
     }
 
     @Override
-    public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
+    public HelloReply sayHello(HelloRequest request) {
         var uuid = UUID.randomUUID().toString();
-        var firstName = request.getName().getFirst();
-        var lastName = request.getName().getLast();
-        var age = request.getAge();
+        var firstName = request.first();
+        var lastName = request.last();
+        var age = request.age();
 
         // Insert the record into the Spanner table
         client.readWriteTransaction().run(transaction -> {
@@ -38,9 +37,7 @@ public class HelloService extends HelloServiceImplBase {
             return null;
         });
 
-        HelloReply response = HelloReply.newBuilder().setMessage("Record inserted with UUID: " + uuid).build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+        return new HelloReply("Record inserted with UUID: " + uuid);
     }
 
 }

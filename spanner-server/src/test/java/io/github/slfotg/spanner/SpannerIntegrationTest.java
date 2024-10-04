@@ -2,15 +2,8 @@ package io.github.slfotg.spanner;
 
 import com.google.cloud.spanner.*;
 
+import io.github.slfotg.spanner.client.ClientHelloService;
 import io.github.slfotg.spanner.domain.HelloRequest;
-import io.github.slfotg.spanner.grpc.HelloReply;
-import io.github.slfotg.spanner.grpc.HelloServiceGrpc;
-import io.github.slfotg.spanner.mapping.RequestMapper;
-import io.github.slfotg.spanner.server.HelloService;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.*;
@@ -22,41 +15,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @SpannerEmulatorTest
 public class SpannerIntegrationTest {
 
-    private Server server;
+    private String host;
+    private int port;
 
     @BeforeEach
-    public void createDatabase(DatabaseClient client) throws Exception {
-        server = ServerBuilder.forPort(8888)
-                .addService(new HelloService(client))
-                .build();
-
-        server.start();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        server.shutdown();
+    public void createDatabase() throws Exception {
+        host = System.getProperty(TestConfig.HELLO_SERVER_HOST);
+        port = Integer.parseInt(System.getProperty(TestConfig.HELLO_SERVER_PORT));
     }
 
     @Test
     public void testSimple(DatabaseClient client) throws ExecutionException, InterruptedException {
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8888)
-                .usePlaintext()
-                .build();
-
-        HelloServiceGrpc.HelloServiceBlockingStub stub = HelloServiceGrpc.newBlockingStub(channel);
-
+        ClientHelloService service = new ClientHelloService(host, port);
         var request = new HelloRequest("Sam", "Foster", 38);
-        var mapper = RequestMapper.INSTANCE;
+        var reply = service.sayHello(request);
 
-        var hello = mapper.toHelloRequest(request);
-
-        HelloReply helloResponse = stub.sayHello(hello);
-
-        System.out.println(helloResponse.getMessage());
-
-        channel.shutdown();
+        System.out.println(reply.message());
 
         ResultSet resultSet = client
                 .readOnlyTransaction()

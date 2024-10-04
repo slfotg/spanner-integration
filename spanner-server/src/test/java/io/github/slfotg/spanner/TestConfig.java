@@ -11,4 +11,9 @@ public final class TestConfig {
     public static final String SPANNER_EMULATOR_PROJECT_ID = "spanner.emulator.projectId";
     public static final String SPANNER_EMULATOR_INSTANCE_ID = "spanner.emulator.instanceId";
     public static final String SPANNER_EMULATOR_DATABASE_ID = "spanner.emulator.databaseId";
+
+    public static final String HELLO_SERVER_HOST = "hello.server.host";
+    public static final String HELLO_SERVER_PORT = "hello.server.port";
+
+    public static final String CONTEXT_SPANNER_CLIENT = "context.spanner.client";
 }

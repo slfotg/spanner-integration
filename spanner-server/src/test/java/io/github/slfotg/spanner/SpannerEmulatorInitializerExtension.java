@@ -90,6 +90,7 @@ public class SpannerEmulatorInitializerExtension implements BeforeEachCallback, 
         createInstance(spanner);
         createDatabase(spanner);
         client = spanner.getDatabaseClient(DatabaseId.of(InstanceId.of(projectId, instanceId), databaseId));
+        context.getStore(ExtensionContext.Namespace.GLOBAL).put(TestConfig.CONTEXT_SPANNER_CLIENT, client);
     }
 
 }

@@ -11,7 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith({
         SpannerEmulatorExtension.class,
-        SpannerEmulatorInitializerExtension.class
+        SpannerEmulatorInitializerExtension.class,
+        SpannerHelloServerExtension.class
 })
 public @interface SpannerEmulatorTest {
 }
