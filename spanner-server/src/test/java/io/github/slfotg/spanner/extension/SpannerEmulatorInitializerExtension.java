@@ -1,4 +1,4 @@
-package io.github.slfotg.spanner;
+package io.github.slfotg.spanner.extension;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -22,12 +22,11 @@ import com.google.cloud.spanner.SpannerOptions;
 
 public class SpannerEmulatorInitializerExtension implements BeforeEachCallback, ParameterResolver {
 
-    private Spanner spanner;
+    private static final String PROJECT_ID = "test-project";
+    private static final String INSTANCE_ID = "test-instance";
+    private static final String DATABASE_ID = "test-database";
+
     private DatabaseClient client;
-    private String endpoint;
-    private String projectId;
-    private String instanceId;
-    private String databaseId;
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
@@ -42,12 +41,12 @@ public class SpannerEmulatorInitializerExtension implements BeforeEachCallback, 
     }
 
     private void createInstance(Spanner spanner) throws InterruptedException, ExecutionException {
-        InstanceConfigId instanceConfig = InstanceConfigId.of(projectId, "test-instance-config");
+        InstanceConfigId instanceConfig = InstanceConfigId.of(PROJECT_ID, "test-instance-config");
         InstanceAdminClient insAdminClient = spanner.getInstanceAdminClient();
         insAdminClient
                 .createInstance(
                         InstanceInfo
-                                .newBuilder(InstanceId.of(projectId, instanceId))
+                                .newBuilder(InstanceId.of(PROJECT_ID, INSTANCE_ID))
                                 .setNodeCount(1)
                                 .setDisplayName("Test instance")
                                 .setInstanceConfigId(instanceConfig)
@@ -59,8 +58,8 @@ public class SpannerEmulatorInitializerExtension implements BeforeEachCallback, 
         DatabaseAdminClient dbAdminClient = spanner.getDatabaseAdminClient();
         dbAdminClient
                 .createDatabase(
-                        instanceId,
-                        databaseId,
+                        INSTANCE_ID,
+                        DATABASE_ID,
                         Arrays.asList(
                                 "CREATE TABLE Users ("
                                         + "  Uuid      STRING(50),"
@@ -74,23 +73,20 @@ public class SpannerEmulatorInitializerExtension implements BeforeEachCallback, 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
 
-        endpoint = System.getProperty(TestConfig.SPANNER_EMULATOR_ENDPOINT);
-        projectId = System.getProperty(TestConfig.SPANNER_EMULATOR_PROJECT_ID);
-        instanceId = System.getProperty(TestConfig.SPANNER_EMULATOR_INSTANCE_ID);
-        databaseId = System.getProperty(TestConfig.SPANNER_EMULATOR_DATABASE_ID);
+        var endpoint = ExtensionContextUtils.getSpannerEmulatorEndpoint(context);
 
         SpannerOptions options = SpannerOptions
                 .newBuilder()
                 .setEmulatorHost(endpoint)
                 .setCredentials(NoCredentials.getInstance())
-                .setProjectId(projectId)
+                .setProjectId(PROJECT_ID)
                 .build();
 
-        spanner = options.getService();
+        var spanner = options.getService();
         createInstance(spanner);
         createDatabase(spanner);
-        client = spanner.getDatabaseClient(DatabaseId.of(InstanceId.of(projectId, instanceId), databaseId));
-        context.getStore(ExtensionContext.Namespace.GLOBAL).put(TestConfig.CONTEXT_SPANNER_CLIENT, client);
+        client = spanner.getDatabaseClient(DatabaseId.of(InstanceId.of(PROJECT_ID, INSTANCE_ID), DATABASE_ID));
+        ExtensionContextUtils.setSpannerDatabaseClient(context, client);
     }
 
 }

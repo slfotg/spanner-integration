@@ -1,12 +1,10 @@
-package io.github.slfotg.spanner;
+package io.github.slfotg.spanner.extension;
 
 import java.net.ServerSocket;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-
-import com.google.cloud.spanner.DatabaseClient;
 
 import io.github.slfotg.spanner.server.HelloGrpcService;
 import io.github.slfotg.spanner.server.ServerHelloService;
@@ -25,11 +23,10 @@ public class SpannerHelloServerExtension implements BeforeEachCallback, AfterEac
         port = socket.getLocalPort();
         socket.close();
 
-        System.setProperty(TestConfig.HELLO_SERVER_HOST, host);
-        System.setProperty(TestConfig.HELLO_SERVER_PORT, String.valueOf(port));
+        ExtensionContextUtils.setHelloServerHost(context, host);
+        ExtensionContextUtils.setHelloServerPort(context, port);
 
-        var client = (DatabaseClient) context.getStore(ExtensionContext.Namespace.GLOBAL)
-                .get(TestConfig.CONTEXT_SPANNER_CLIENT);
+        var client = ExtensionContextUtils.getSpannerDatabaseClient(context);
 
         var service = new ServerHelloService(client);
 
